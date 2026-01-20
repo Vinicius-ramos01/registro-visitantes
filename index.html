@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Visitantes</title>
+    <style>
+:root {
+    --primary: #2563eb;
+    --success: #16a34a;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: linear-gradient(135deg, #e0f2fe, #f8fafc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: var(--card);
+    width: 100%;
+    max-width: 420px;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.08);
+}
+
+h2 {
+    margin: 0 0 20px;
+    text-align: center;
+    color: var(--text);
+    font-size: 22px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-size: 15px;
+    margin-bottom: 12px;
+    transition: border .2s, box-shadow .2s;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform .1s, box-shadow .1s, opacity .1s;
+}
+
+button:active {
+    transform: scale(.98);
+}
+
+.voice-btn {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    margin-top: 6px;
+}
+
+.voice-btn:hover {
+    opacity: .95;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    margin-top: 10px;
+}
+
+#status {
+    margin-top: 16px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--success);
+    font-weight: 500;
+}
+    </style>
+<script>
+let etapa = 0;
+
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = "pt-BR";
+recognition.continuous = true;
+recognition.interimResults = false;
+
+function iniciarVoz() {
+    etapa = 1;
+    document.getElementById("status").innerText = "Escutando...";
+    falar("Por favor, diga seu nome completo.");
+}
+
+function falar(texto) {
+    const msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "pt-BR";
+
+    msg.onend = () => {
+        recognition.start();
+    };
+
+    speechSynthesis.speak(msg);
+}
+
+recognition.onresult = (event) => {
+    const texto = event.results[event.results.length - 1][0].transcript.trim();
+
+    if (etapa === 1) {
+        document.getElementById("nome").value = texto;
+        etapa = 2;
+        falar("Agora diga seu telefone.");
+    } 
+    else if (etapa === 2) {
+        document.getElementById("telefone").value = texto.replace(/\D/g, "");
+        etapa = 3;
+        falar("Por fim, diga o nome de quem te convidou.");
+    } 
+    else if (etapa === 3) {
+        document.getElementById("convidado").value = texto;
+        document.getElementById("status").innerText =
+            "Dados preenchidos por voz.";
+        recognition.stop();
+        etapa = 0;
+    }
+};
+
+recognition.onerror = () => {
+    document.getElementById("status").innerText =
+        "Erro ao captar voz. Tente novamente.";
+    recognition.stop();
+};
+
+}
+function salvar() {
+    const nome = document.getElementById("nome").value;
+    const telefone = document.getElementById("telefone").value;
+    const convidado = document.getElementById("convidado").value;
+
+    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse";
+
+    const dados = new FormData();
+    dados.append("entry.307050300", nome);
+    dados.append("entry.2029607863", telefone);
+    dados.append("entry.931167626", convidado);
+
+    fetch(formURL, {
+        method: "POST",
+        mode: "no-cors",
+        body: dados
+    });
+
+    document.getElementById("status").innerText =
+        "Registro enviado com sucesso!";
+        
+    document.getElementById("nome").value = "";
+    document.getElementById("telefone").value = "";
+    document.getElementById("convidado").value = "";
+};
+</script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registro de Visitantes</h2>
+
+    <input type="text" id="nome" placeholder="Nome completo">
+    <input type="text" id="telefone" placeholder="Telefone">
+    <input type="text" id="convidado" placeholder="Quem convidou">
+
+    <button class="voice-btn" onclick="iniciarVoz()">🎤 Registrar por Voz</button>
+    <button onclick="salvar()">Salvar</button>
+
+    <p id="status"></p>
+</div>
+</body>
+</html>
+
