@@ -239,13 +239,63 @@ button {
 }
 
 /* =====================================================
-   DESTAQUE DE CAMPO ATIVO POR VOZ (APENAS ADICIONADO)
+   DESTAQUE DE CAMPO ATIVO POR VOZ
    ===================================================== */
 .voice-highlight {
     border-color: #22c55e !important;
     box-shadow: 0 0 0 3px rgba(34,197,94,.35) !important;
     background-color: #f0fdf4;
 }
+
+/* ===== CAMPO INVÁLIDO (GENÉRICO) ===== */
+.campo-invalido {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.25) !important;
+}
+
+/* =====================================================
+   RESPONSIVIDADE
+   ===================================================== */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 16px;
+        align-items: flex-start;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 12px;
+    }
+
+    .welcome-card {
+        width: 90%;
+        padding: 24px;
+    }
+
+    .popup-card {
+        width: 90%;
+        padding: 22px;
+    }
+}
+
 
 </style>
 
@@ -423,10 +473,6 @@ function validarTelefoneBrasileiro() {
 	
 </div>
 <script>
-/* =====================================================
-   CORREÇÕES SEM ALTERAR CÓDIGO EXISTENTE
-   ===================================================== */
-
 /* 1️⃣ GARANTE QUE O INPUT EXISTE ANTES DO EVENTO */
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -501,7 +547,6 @@ recognition.stop = function () {
 };
 
 </script>
-
 <script>
 /* =====================================================
    FLUXO CORRETO USANDO A WELCOME EXISTENTE
@@ -551,7 +596,68 @@ function restaurarWelcome() {
     welcome.style.display = "flex";
 }
 </script>
+<script>
+/* =====================================================
+   OBRIGATORIEDADE DE NOME COMPLETO
+   ===================================================== */
 
+const salvarComNomeObrigatorio = salvar;
+
+salvar = function () {
+
+    // 🔴 Valida nome completo
+    if (!nome.value || nome.value.trim().length < 3) {
+        alert("Por favor, informe seu nome completo.");
+        nome.focus();
+        return;
+    }
+
+    // 🔴 Mantém validação de telefone
+    if (!validarTelefoneBrasileiro()) {
+        return;
+    }
+
+    // 🔴 Mantém validação da LGPD (já existe no salvar original)
+    salvarComNomeObrigatorio();
+};
+</script>
+
+<script>
+/* =====================================================
+   DESTAQUE VISUAL PARA CAMPOS OBRIGATÓRIOS
+   ===================================================== */
+
+const salvarComDestaque = salvar;
+
+salvar = function () {
+
+    // limpa estados anteriores
+    nome.classList.remove("campo-invalido");
+    telefone.classList.remove("telefone-invalido");
+
+    // 🔴 Nome obrigatório
+    if (!nome.value || nome.value.trim().length < 3) {
+        nome.classList.add("campo-invalido");
+        alert("Por favor, informe seu nome completo.");
+        nome.focus();
+        return;
+    }
+
+    // 🔴 Telefone obrigatório (usa sua validação existente)
+    if (!validarTelefoneBrasileiro()) {
+        telefone.classList.add("telefone-invalido");
+        return;
+    }
+
+    // 🔴 LGPD obrigatória (mantém comportamento atual)
+    if (!lgpd.checked) {
+        alert("Para continuar, é necessário aceitar o aviso de privacidade.");
+        return;
+    }
+
+    salvarComDestaque();
+};
+</script>
 
 </body>
 </html>
