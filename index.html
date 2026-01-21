@@ -900,6 +900,15 @@ fecharPopup = function () {
 };
 </script>
 
+<script>
+fetch("https://script.google.com/macros/s/AKfycbxr6IbzdC7ea5JVIZ_SgIDbULw0kKJSbBD2dTpEw8JN407JRn0PwSmigIoKOnhiknlDzQ/exec")
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("status").innerText =
+      `Você é o visitante número ${d.total + 1}`;
+  });
+</script>
+
 
 </body>
 </html>
