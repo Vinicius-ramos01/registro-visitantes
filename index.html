@@ -297,6 +297,75 @@ button {
 }
 
 
+/* =========================================
+   AJUSTES RESPONSIVOS DEFINITIVOS
+   (SEM QUEBRAR LAYOUT)
+========================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        align-items: flex-start;
+        justify-content: flex-start;
+        padding: 16px;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    input {
+        font-size: 14px;
+        padding: 12px;
+    }
+
+    button {
+        font-size: 15px;
+        padding: 12px;
+        border-radius: 10px;
+    }
+
+    .lgpd-box {
+        padding: 14px;
+    }
+
+    .lgpd-title {
+        font-size: 14px;
+    }
+
+    .lgpd-text {
+        font-size: 12.5px;
+    }
+
+    .welcome-card,
+    .popup-card {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 8px;
+        padding: 22px;
+        border-radius: 16px;
+    }
+}
+
+
 </style>
 
 <script>
@@ -580,6 +649,7 @@ fecharPopup = function () {
     welcome.style.display = "flex";
 };
 
+
 function restaurarWelcome() {
     const welcome = document.getElementById("welcome");
     const card = welcome.querySelector(".welcome-card");
@@ -658,6 +728,116 @@ salvar = function () {
     salvarComDestaque();
 };
 </script>
+
+<script>
+/* =====================================================
+   LIMPA LGPD AO INICIAR NOVO REGISTRO
+   ===================================================== */
+
+const fecharPopupLGPDOriginal = fecharPopup;
+
+fecharPopup = function () {
+    fecharPopupLGPDOriginal();
+
+    // desmarca LGPD
+    if (window.lgpd) {
+        lgpd.checked = false;
+    }
+};
+</script>
+
+<script>
+/* ===============================
+   MENSAGEM VISUAL
+================================ */
+function mostrarMensagem(texto, tipo = "erro") {
+    status.innerText = texto;
+    status.className = tipo === "erro" ? "status-erro" : "status-sucesso";
+}
+
+/* ===============================
+   TELEFONE BR
+================================ */
+function aplicarMascaraTelefone(valor) {
+    const n = valor.replace(/\D/g, "").slice(0, 11);
+
+    if (n.length <= 10) {
+        return n.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+    }
+    return n.replace(/^(\d{2})(\d{5})(\d{0,4})$/, "($1) $2-$3");
+}
+
+function validarTelefoneBrasileiro() {
+    const n = telefone.value.replace(/\D/g, "");
+    if (!(n.length === 10 || n.length === 11)) {
+        telefone.classList.add("telefone-invalido");
+        mostrarMensagem("Informe um telefone válido no formato (DDD) XXXXX-XXXX.");
+        telefone.focus();
+        return false;
+    }
+    return true;
+}
+
+telefone.addEventListener("input", () => {
+    telefone.value = aplicarMascaraTelefone(telefone.value);
+    telefone.classList.remove("telefone-invalido");
+});
+
+/* ===============================
+   SALVAR (ÚNICO)
+================================ */
+function salvar() {
+
+    status.innerText = "";
+    nome.classList.remove("campo-invalido");
+    telefone.classList.remove("telefone-invalido");
+
+    if (!nome.value || nome.value.trim().length < 3) {
+        nome.classList.add("campo-invalido");
+        mostrarMensagem("Informe seu nome completo.");
+        nome.focus();
+        return;
+    }
+
+    if (!validarTelefoneBrasileiro()) return;
+
+    if (!lgpd.checked) {
+        mostrarMensagem("É necessário aceitar o Aviso de Privacidade (LGPD).");
+        return;
+    }
+
+    const dados = new FormData();
+    dados.append("entry.307050300", nome.value);
+    dados.append("entry.2029607863", telefone.value);
+    dados.append("entry.931167626", convidado.value);
+
+    fetch(
+        "https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse",
+        { method: "POST", mode: "no-cors", body: dados }
+    );
+
+    document.getElementById("popup").style.display = "flex";
+}
+
+/* ===============================
+   FECHAR POPUP / NOVO REGISTRO
+================================ */
+const fecharPopupOriginal = fecharPopup;
+
+fecharPopup = function () {
+    fecharPopupOriginal();
+
+    nome.value = "";
+    telefone.value = "";
+    convidado.value = "";
+    lgpd.checked = false;
+    status.innerText = "";
+
+    const welcome = document.getElementById("welcome");
+    if (welcome) welcome.style.display = "flex";
+};
+</script>
+
 
 </body>
 </html>
