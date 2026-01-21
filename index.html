@@ -444,14 +444,6 @@ document.addEventListener("DOMContentLoaded", function () {
 const salvarOriginal = salvar;
 salvar = function () {
 
-    if (!validarNomeObrigatorio()) return;
-
-    if (!validarTelefoneBrasileiro()) return;
-
-    salvarOriginal();
-};
-
-
     if (!validarTelefoneBrasileiro()) {
         return;
     }
@@ -525,9 +517,6 @@ fecharPopup = function () {
     telefone.value = "";
     convidado.value = "";
     status.innerText = "";
-	
-	if (lgpd) lgpd.checked = false;
-
 
     // altera conteúdo da welcome
     const welcome = document.getElementById("welcome");
@@ -560,17 +549,6 @@ function restaurarWelcome() {
     `;
 
     welcome.style.display = "flex";
-}
-</script>
-
-<script>
-function validarNomeObrigatorio() {
-    if (!nome.value.trim()) {
-        nome.focus();
-        alert("Por favor, informe o nome completo.");
-        return false;
-    }
-    return true;
 }
 </script>
 
