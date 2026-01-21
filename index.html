@@ -444,6 +444,14 @@ document.addEventListener("DOMContentLoaded", function () {
 const salvarOriginal = salvar;
 salvar = function () {
 
+    if (!validarNomeObrigatorio()) return;
+
+    if (!validarTelefoneBrasileiro()) return;
+
+    salvarOriginal();
+};
+
+
     if (!validarTelefoneBrasileiro()) {
         return;
     }
@@ -500,7 +508,70 @@ recognition.stop = function () {
     recognitionStopOriginal();
 };
 
+</script>
 
+<script>
+/* =====================================================
+   FLUXO CORRETO USANDO A WELCOME EXISTENTE
+   ===================================================== */
+
+const fecharPopupOriginal = fecharPopup;
+
+fecharPopup = function () {
+    fecharPopupOriginal();
+
+    // limpa campos
+    nome.value = "";
+    telefone.value = "";
+    convidado.value = "";
+    status.innerText = "";
+	
+	if (lgpd) lgpd.checked = false;
+
+
+    // altera conteúdo da welcome
+    const welcome = document.getElementById("welcome");
+    if (!welcome) return;
+
+    const card = welcome.querySelector(".welcome-card");
+
+    card.innerHTML = `
+        <h1>Registrar novo visitante</h1>
+        <p class="verse">
+            Clique abaixo para iniciar um novo cadastro.
+        </p>
+        <button onclick="restaurarWelcome()">Iniciar</button>
+    `;
+
+    welcome.style.display = "flex";
+};
+
+function restaurarWelcome() {
+    const welcome = document.getElementById("welcome");
+    const card = welcome.querySelector(".welcome-card");
+
+    card.innerHTML = `
+        <h1>Seja muito bem-vindo! 🙌</h1>
+        <p class="verse">
+            “Alegrei-me quando me disseram: Vamos à casa do Senhor.”
+        </p>
+        <span class="ref">Salmos 122:1</span>
+        <button onclick="fecharWelcome()">Continuar</button>
+    `;
+
+    welcome.style.display = "flex";
+}
+</script>
+
+<script>
+function validarNomeObrigatorio() {
+    if (!nome.value.trim()) {
+        nome.focus();
+        alert("Por favor, informe o nome completo.");
+        return false;
+    }
+    return true;
+}
 </script>
 
 
