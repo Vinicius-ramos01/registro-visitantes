@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Registro de Visitantes</title>
-    <style>
+<meta charset="UTF-8">
+<title>Registro de Visitantes</title>
+
+<style>
 :root {
     --primary: #2563eb;
     --success: #16a34a;
-    --bg: #f1f5f9;
+    --danger: #dc2626;
     --card: #ffffff;
     --text: #0f172a;
-    --muted: #64748b;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -37,10 +35,9 @@ body {
 }
 
 h2 {
-    margin: 0 0 20px;
     text-align: center;
+    margin-bottom: 20px;
     color: var(--text);
-    font-size: 22px;
 }
 
 input {
@@ -50,13 +47,17 @@ input {
     border: 1px solid #e2e8f0;
     font-size: 15px;
     margin-bottom: 12px;
-    transition: border .2s, box-shadow .2s;
 }
 
 input:focus {
     outline: none;
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+}
+
+input.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(220,38,38,.2);
 }
 
 button {
@@ -67,21 +68,12 @@ button {
     border-radius: 12px;
     border: none;
     cursor: pointer;
-    transition: transform .1s, box-shadow .1s, opacity .1s;
-}
-
-button:active {
-    transform: scale(.98);
 }
 
 .voice-btn {
     background: linear-gradient(135deg, #22c55e, #16a34a);
     color: white;
     margin-top: 6px;
-}
-
-.voice-btn:hover {
-    opacity: .95;
 }
 
 .save-btn {
@@ -97,29 +89,106 @@ button:active {
     color: var(--success);
     font-weight: 500;
 }
-    </style>
+
+/* LGPD */
+
+.lgpd-box {
+    margin-top: 18px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.lgpd-check {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.lgpd-check input { display: none; }
+
+.checkmark {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 2px solid var(--primary);
+    background: white;
+    position: relative;
+}
+
+.lgpd-check input:checked + .checkmark {
+    background: var(--primary);
+}
+
+.lgpd-check input:checked + .checkmark::after {
+    content: "✔";
+    color: white;
+    position: absolute;
+    top: 2px;
+    left: 6px;
+}
+
+.lgpd-text {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #334155;
+    text-align: justify;
+    line-height: 1.6;
+}
+
+/* Welcome + Popup */
+
+.welcome, .popup {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.welcome {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.popup {
+    background: rgba(15,23,42,.6);
+    display: none;
+}
+
+.welcome-card, .popup-card {
+    background: white;
+    padding: 32px;
+    border-radius: 18px;
+    text-align: center;
+    max-width: 420px;
+    box-shadow: 0 30px 60px rgba(0,0,0,.25);
+}
+
+.popup-card h2 {
+    color: #1e293b;
+}
+</style>
+
 <script>
 let etapa = 0;
 
 const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
 recognition.lang = "pt-BR";
 recognition.continuous = true;
-recognition.interimResults = false;
 
 function iniciarVoz() {
     etapa = 1;
-    document.getElementById("status").innerText = "Escutando...";
+    status.innerText = "Escutando...";
     falar("Por favor, diga seu nome completo.");
 }
 
 function falar(texto) {
     const msg = new SpeechSynthesisUtterance(texto);
     msg.lang = "pt-BR";
-
-    msg.onend = () => {
-        recognition.start();
-    };
-
+    msg.onend = () => recognition.start();
     speechSynthesis.speak(msg);
 }
 
@@ -127,72 +196,113 @@ recognition.onresult = (event) => {
     const texto = event.results[event.results.length - 1][0].transcript.trim();
 
     if (etapa === 1) {
-        document.getElementById("nome").value = texto;
+        nome.value = texto;
         etapa = 2;
         falar("Agora diga seu telefone.");
-    } 
-    else if (etapa === 2) {
-        document.getElementById("telefone").value = texto.replace(/\D/g, "");
+    } else if (etapa === 2) {
+        telefone.value = texto.replace(/\D/g, "");
         etapa = 3;
         falar("Por fim, diga o nome de quem te convidou.");
-    } 
-    else if (etapa === 3) {
-        document.getElementById("convidado").value = texto;
-        document.getElementById("status").innerText =
-            "Dados preenchidos por voz.";
+    } else if (etapa === 3) {
+        convidado.value = texto;
         recognition.stop();
         etapa = 0;
+        status.innerText = "Dados preenchidos por voz.";
     }
 };
 
-recognition.onerror = () => {
-    document.getElementById("status").innerText =
-        "Erro ao captar voz. Tente novamente.";
-    recognition.stop();
-};
-
+function validarCampo(campo, mensagem) {
+    if (campo.value.trim() === "") {
+        campo.classList.add("error");
+        alert(mensagem);
+        campo.focus();
+        return false;
+    }
+    campo.classList.remove("error");
+    return true;
 }
-function salvar() {
-    const nome = document.getElementById("nome").value;
-    const telefone = document.getElementById("telefone").value;
-    const convidado = document.getElementById("convidado").value;
 
-    const formURL = "https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse";
+function salvar() {
+
+    if (!validarCampo(nome, "Informe seu nome completo")) return;
+    if (!validarCampo(telefone, "Informe seu telefone")) return;
+
+    if (!lgpd.checked) {
+        alert("É necessário aceitar o Aviso de Privacidade.");
+        return;
+    }
 
     const dados = new FormData();
-    dados.append("entry.307050300", nome);
-    dados.append("entry.2029607863", telefone);
-    dados.append("entry.931167626", convidado);
+    dados.append("entry.307050300", nome.value);
+    dados.append("entry.2029607863", telefone.value);
+    dados.append("entry.931167626", convidado.value);
 
-    fetch(formURL, {
+    fetch("https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse", {
         method: "POST",
         mode: "no-cors",
         body: dados
     });
 
-    document.getElementById("status").innerText =
-        "Registro enviado com sucesso!";
-        
-    document.getElementById("nome").value = "";
-    document.getElementById("telefone").value = "";
-    document.getElementById("convidado").value = "";
-};
+    popup.style.display = "flex";
+    nome.value = telefone.value = convidado.value = "";
+    lgpd.checked = false;
+}
+
+function fecharWelcome() {
+    welcome.style.display = "none";
+}
+
+function fecharPopup() {
+    popup.style.display = "none";
+}
 </script>
 </head>
+
 <body>
+
+<div id="welcome" class="welcome">
+    <div class="welcome-card">
+        <h1>Seja muito bem-vindo! 🙌</h1>
+        <p class="verse">
+            “Alegrei-me quando me disseram: Vamos à casa do Senhor.”
+        </p>
+        <span class="ref">Salmos 122:1</span>
+        <button onclick="fecharWelcome()">Continuar</button>
+    </div>
+</div>
+
+<div id="popup" class="popup">
+    <div class="popup-card">
+        <h2>🎉 Registro realizado!</h2>
+        <p>Obrigado por sua visita.<br>Que Deus te abençoe!</p>
+        <button onclick="fecharPopup()">Fechar</button>
+    </div>
+</div>
 
 <div class="container">
     <h2>Registro de Visitantes</h2>
 
-    <input type="text" id="nome" placeholder="Nome completo">
-    <input type="text" id="telefone" placeholder="Telefone">
-    <input type="text" id="convidado" placeholder="Quem convidou">
+    <input id="nome" placeholder="Nome completo" required>
+    <input id="telefone" placeholder="Telefone" required inputmode="numeric">
+    <input id="convidado" placeholder="Quem convidou">
+
+    <div class="lgpd-box">
+        <label class="lgpd-check">
+            <input type="checkbox" id="lgpd">
+            <span class="checkmark"></span>
+            <strong>Concordo com o Aviso de Privacidade</strong>
+        </label>
+        <p class="lgpd-text">
+            As informações coletadas serão utilizadas exclusivamente para fins de recepção,
+            acolhimento e organização interna da igreja, conforme a LGPD.
+        </p>
+    </div>
 
     <button class="voice-btn" onclick="iniciarVoz()">🎤 Registrar por Voz</button>
-    <button onclick="salvar()">Salvar</button>
+    <button class="save-btn" onclick="salvar()">Salvar</button>
 
     <p id="status"></p>
 </div>
+
 </body>
 </html>
-
