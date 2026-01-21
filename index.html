@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Visitantes</title>
 
 <style>
@@ -13,7 +14,9 @@
     --text: #0f172a;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -23,22 +26,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 16px;
 }
+
+/* ===== CONTAINER ===== */
 
 .container {
     background: var(--card);
     width: 100%;
     max-width: 420px;
-    padding: 28px;
+    padding: 24px;
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0,0,0,.08);
 }
 
 h2 {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     color: var(--text);
+    font-size: 22px;
 }
+
+/* ===== INPUTS ===== */
 
 input {
     width: 100%;
@@ -60,9 +69,11 @@ input.error {
     box-shadow: 0 0 0 3px rgba(220,38,38,.2);
 }
 
+/* ===== BOTÕES ===== */
+
 button {
     width: 100%;
-    padding: 14px;
+    padding: 15px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 12px;
@@ -83,18 +94,17 @@ button {
 }
 
 #status {
-    margin-top: 16px;
+    margin-top: 14px;
     text-align: center;
     font-size: 14px;
     color: var(--success);
-    font-weight: 500;
 }
 
-/* LGPD */
+/* ===== LGPD ===== */
 
 .lgpd-box {
-    margin-top: 18px;
-    padding: 16px;
+    margin-top: 16px;
+    padding: 14px;
     border-radius: 12px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -103,19 +113,22 @@ button {
 .lgpd-check {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     cursor: pointer;
 }
 
-.lgpd-check input { display: none; }
+.lgpd-check input {
+    display: none;
+}
 
 .checkmark {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     border-radius: 6px;
     border: 2px solid var(--primary);
     background: white;
     position: relative;
+    flex-shrink: 0;
 }
 
 .lgpd-check input:checked + .checkmark {
@@ -126,8 +139,8 @@ button {
     content: "✔";
     color: white;
     position: absolute;
-    top: 2px;
-    left: 6px;
+    top: 1px;
+    left: 5px;
 }
 
 .lgpd-text {
@@ -135,17 +148,19 @@ button {
     font-size: 13px;
     color: #334155;
     text-align: justify;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
-/* Welcome + Popup */
+/* ===== WELCOME & POPUP ===== */
 
-.welcome, .popup {
+.welcome,
+.popup {
     position: fixed;
     inset: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 16px;
     z-index: 1000;
 }
 
@@ -158,59 +173,52 @@ button {
     display: none;
 }
 
-.welcome-card, .popup-card {
+.welcome-card,
+.popup-card {
     background: white;
-    padding: 32px;
+    padding: 26px;
     border-radius: 18px;
     text-align: center;
+    width: 100%;
     max-width: 420px;
     box-shadow: 0 30px 60px rgba(0,0,0,.25);
 }
 
+.welcome-card h1 {
+    font-size: 22px;
+    margin-bottom: 14px;
+}
+
+.welcome-card p {
+    font-style: italic;
+    color: #334155;
+}
+
 .popup-card h2 {
+    margin-bottom: 10px;
     color: #1e293b;
+}
+
+/* ===== RESPONSIVO TABLET ===== */
+@media (min-width: 600px) {
+    .container {
+        padding: 28px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
+
+/* ===== RESPONSIVO DESKTOP ===== */
+@media (min-width: 1024px) {
+    .container {
+        max-width: 460px;
+    }
 }
 </style>
 
 <script>
-let etapa = 0;
-
-const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-recognition.lang = "pt-BR";
-recognition.continuous = true;
-
-function iniciarVoz() {
-    etapa = 1;
-    status.innerText = "Escutando...";
-    falar("Por favor, diga seu nome completo.");
-}
-
-function falar(texto) {
-    const msg = new SpeechSynthesisUtterance(texto);
-    msg.lang = "pt-BR";
-    msg.onend = () => recognition.start();
-    speechSynthesis.speak(msg);
-}
-
-recognition.onresult = (event) => {
-    const texto = event.results[event.results.length - 1][0].transcript.trim();
-
-    if (etapa === 1) {
-        nome.value = texto;
-        etapa = 2;
-        falar("Agora diga seu telefone.");
-    } else if (etapa === 2) {
-        telefone.value = texto.replace(/\D/g, "");
-        etapa = 3;
-        falar("Por fim, diga o nome de quem te convidou.");
-    } else if (etapa === 3) {
-        convidado.value = texto;
-        recognition.stop();
-        etapa = 0;
-        status.innerText = "Dados preenchidos por voz.";
-    }
-};
-
 function validarCampo(campo, mensagem) {
     if (campo.value.trim() === "") {
         campo.classList.add("error");
@@ -223,7 +231,6 @@ function validarCampo(campo, mensagem) {
 }
 
 function salvar() {
-
     if (!validarCampo(nome, "Informe seu nome completo")) return;
     if (!validarCampo(telefone, "Informe seu telefone")) return;
 
@@ -231,17 +238,6 @@ function salvar() {
         alert("É necessário aceitar o Aviso de Privacidade.");
         return;
     }
-
-    const dados = new FormData();
-    dados.append("entry.307050300", nome.value);
-    dados.append("entry.2029607863", telefone.value);
-    dados.append("entry.931167626", convidado.value);
-
-    fetch("https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse", {
-        method: "POST",
-        mode: "no-cors",
-        body: dados
-    });
 
     popup.style.display = "flex";
     nome.value = telefone.value = convidado.value = "";
@@ -263,10 +259,8 @@ function fecharPopup() {
 <div id="welcome" class="welcome">
     <div class="welcome-card">
         <h1>Seja muito bem-vindo! 🙌</h1>
-        <p class="verse">
-            “Alegrei-me quando me disseram: Vamos à casa do Senhor.”
-        </p>
-        <span class="ref">Salmos 122:1</span>
+        <p>“Alegrei-me quando me disseram: Vamos à casa do Senhor.”</p>
+        <small>Salmos 122:1</small>
         <button onclick="fecharWelcome()">Continuar</button>
     </div>
 </div>
@@ -283,7 +277,7 @@ function fecharPopup() {
     <h2>Registro de Visitantes</h2>
 
     <input id="nome" placeholder="Nome completo" required>
-    <input id="telefone" placeholder="Telefone" required inputmode="numeric">
+    <input id="telefone" placeholder="Telefone" inputmode="numeric" required>
     <input id="convidado" placeholder="Quem convidou">
 
     <div class="lgpd-box">
@@ -293,15 +287,12 @@ function fecharPopup() {
             <strong>Concordo com o Aviso de Privacidade</strong>
         </label>
         <p class="lgpd-text">
-            As informações coletadas serão utilizadas exclusivamente para fins de recepção,
-            acolhimento e organização interna da igreja, conforme a LGPD.
+            As informações coletadas serão utilizadas exclusivamente para fins de recepção
+            e organização interna da igreja, conforme a LGPD.
         </p>
     </div>
 
-    <button class="voice-btn" onclick="iniciarVoz()">🎤 Registrar por Voz</button>
     <button class="save-btn" onclick="salvar()">Salvar</button>
-
-    <p id="status"></p>
 </div>
 
 </body>
