@@ -2,14 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Registro de Visitantes</title>
 
 <style>
 :root {
     --primary: #2563eb;
     --success: #16a34a;
-    --danger: #dc2626;
     --card: #ffffff;
     --text: #0f172a;
 }
@@ -26,28 +24,22 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px;
 }
-
-/* ===== CONTAINER ===== */
 
 .container {
     background: var(--card);
     width: 100%;
     max-width: 420px;
-    padding: 24px;
+    padding: 28px;
     border-radius: 16px;
     box-shadow: 0 20px 40px rgba(0,0,0,.08);
 }
 
 h2 {
     text-align: center;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     color: var(--text);
-    font-size: 22px;
 }
-
-/* ===== INPUTS ===== */
 
 input {
     width: 100%;
@@ -64,16 +56,9 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(37,99,235,.15);
 }
 
-input.error {
-    border-color: var(--danger);
-    box-shadow: 0 0 0 3px rgba(220,38,38,.2);
-}
-
-/* ===== BOTÕES ===== */
-
 button {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     font-size: 16px;
     font-weight: 600;
     border-radius: 12px;
@@ -94,17 +79,18 @@ button {
 }
 
 #status {
-    margin-top: 14px;
+    margin-top: 16px;
     text-align: center;
     font-size: 14px;
     color: var(--success);
+    font-weight: 500;
 }
 
 /* ===== LGPD ===== */
 
 .lgpd-box {
-    margin-top: 16px;
-    padding: 14px;
+    margin-top: 18px;
+    padding: 16px;
     border-radius: 12px;
     background: #f8fafc;
     border: 1px solid #e2e8f0;
@@ -113,7 +99,7 @@ button {
 .lgpd-check {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     cursor: pointer;
 }
 
@@ -122,13 +108,12 @@ button {
 }
 
 .checkmark {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     border-radius: 6px;
     border: 2px solid var(--primary);
     background: white;
     position: relative;
-    flex-shrink: 0;
 }
 
 .lgpd-check input:checked + .checkmark {
@@ -139,8 +124,14 @@ button {
     content: "✔";
     color: white;
     position: absolute;
-    top: 1px;
-    left: 5px;
+    top: 2px;
+    left: 6px;
+}
+
+.lgpd-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
 }
 
 .lgpd-text {
@@ -148,152 +139,370 @@ button {
     font-size: 13px;
     color: #334155;
     text-align: justify;
-    line-height: 1.5;
-}
-
-/* ===== WELCOME & POPUP ===== */
-
-.welcome,
-.popup {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-    z-index: 1000;
+    line-height: 1.6;
 }
 
 .welcome {
+    position: fixed;
+    inset: 0;
     background: linear-gradient(135deg, #2563eb, #1e40af);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
-.popup {
-    background: rgba(15,23,42,.6);
-    display: none;
-}
-
-.welcome-card,
-.popup-card {
+.welcome-card {
     background: white;
-    padding: 26px;
+    padding: 32px;
     border-radius: 18px;
     text-align: center;
-    width: 100%;
     max-width: 420px;
     box-shadow: 0 30px 60px rgba(0,0,0,.25);
+    animation: fadeIn .6s ease;
 }
 
 .welcome-card h1 {
-    font-size: 22px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
+    color: #1e293b;
 }
 
-.welcome-card p {
+.verse {
+    font-size: 16px;
     font-style: italic;
     color: #334155;
 }
 
+.ref {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.welcome-card button {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.popup-card {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    text-align: center;
+    max-width: 360px;
+    box-shadow: 0 25px 50px rgba(0,0,0,.3);
+    animation: pop .4s ease;
+}
+
 .popup-card h2 {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     color: #1e293b;
 }
 
-/* ===== RESPONSIVO TABLET ===== */
-@media (min-width: 600px) {
-    .container {
-        padding: 28px;
-    }
-
-    h2 {
-        font-size: 24px;
-    }
+.popup-card p {
+    color: #334155;
+    line-height: 1.6;
 }
 
-/* ===== RESPONSIVO DESKTOP ===== */
-@media (min-width: 1024px) {
-    .container {
-        max-width: 460px;
-    }
+.popup-card button {
+    margin-top: 20px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
 }
+
+@keyframes pop {
+    from { transform: scale(.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* ADICIONADO: telefone inválido */
+.telefone-invalido {
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.25) !important;
+}
+
+/* =====================================================
+   DESTAQUE DE CAMPO ATIVO POR VOZ (APENAS ADICIONADO)
+   ===================================================== */
+.voice-highlight {
+    border-color: #22c55e !important;
+    box-shadow: 0 0 0 3px rgba(34,197,94,.35) !important;
+    background-color: #f0fdf4;
+}
+
 </style>
 
 <script>
-function validarCampo(campo, mensagem) {
-    if (campo.value.trim() === "") {
-        campo.classList.add("error");
-        alert(mensagem);
-        campo.focus();
-        return false;
-    }
-    campo.classList.remove("error");
-    return true;
+let etapa = 0;
+
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = "pt-BR";
+recognition.continuous = true;
+
+function iniciarVoz() {
+    etapa = 1;
+    status.innerText = "Escutando...";
+    falar("Por favor, diga seu nome completo.");
 }
 
-function salvar() {
-    if (!validarCampo(nome, "Informe seu nome completo")) return;
-    if (!validarCampo(telefone, "Informe seu telefone")) return;
+function falar(texto) {
+    const msg = new SpeechSynthesisUtterance(texto);
+    msg.lang = "pt-BR";
+    msg.onend = () => recognition.start();
+    speechSynthesis.speak(msg);
+}
 
+recognition.onresult = (event) => {
+    const texto = event.results[event.results.length - 1][0].transcript.trim();
+
+    if (etapa === 1) {
+        nome.value = texto;
+        etapa = 2;
+        falar("Agora diga seu telefone.");
+    } else if (etapa === 2) {
+        telefone.value = texto.replace(/\D/g, "");
+        etapa = 3;
+        falar("Por fim, diga o nome de quem te convidou.");
+    } else if (etapa === 3) {
+        convidado.value = texto;
+        status.innerText = "Dados preenchidos por voz.";
+        recognition.stop();
+        etapa = 0;
+    }
+};
+
+recognition.onerror = () => {
+    status.innerText = "Erro ao captar voz. Tente novamente.";
+    recognition.stop();
+};
+
+function salvar() {
     if (!lgpd.checked) {
-        alert("É necessário aceitar o Aviso de Privacidade.");
+        alert("Para continuar, é necessário aceitar o aviso de privacidade.");
         return;
+		
+	if (!validarTelefoneBrasileiro()) return;
+
     }
 
-    popup.style.display = "flex";
+    const dados = new FormData();
+    dados.append("entry.307050300", nome.value);
+    dados.append("entry.2029607863", telefone.value);
+    dados.append("entry.931167626", convidado.value);
+
+    fetch("https://docs.google.com/forms/d/e/1FAIpQLSchRFoZZXCBUi2WHQgmehQ66CSYhkoI2XKNEYmt_LVJ97hlrA/formResponse", {
+        method: "POST",
+        mode: "no-cors",
+        body: dados
+    });
+
+    document.getElementById("popup").style.display = "flex";
     nome.value = telefone.value = convidado.value = "";
-    lgpd.checked = false;
 }
 
 function fecharWelcome() {
-    welcome.style.display = "none";
+    document.getElementById("welcome").style.display = "none";
 }
 
 function fecharPopup() {
-    popup.style.display = "none";
+    document.getElementById("popup").style.display = "none";
 }
+
+// ================================
+// ADICIONADO: TELEFONE BR
+// ================================
+
+function aplicarMascaraTelefone(valor) {
+    const numeros = valor.replace(/\D/g, "").slice(0, 11);
+
+    if (numeros.length <= 10) {
+        return numeros.replace(
+            /^(\d{2})(\d{4})(\d{0,4})$/,
+            "($1) $2-$3"
+        );
+    }
+
+    return numeros.replace(
+        /^(\d{2})(\d{5})(\d{0,4})$/,
+        "($1) $2-$3"
+    );
+}
+
+function telefoneValido(valor) {
+    const numeros = valor.replace(/\D/g, "");
+    return numeros.length === 10 || numeros.length === 11;
+}
+
+// Aplica máscara enquanto digita
+telefone.addEventListener("input", () => {
+    telefone.value = aplicarMascaraTelefone(telefone.value);
+    telefone.classList.remove("telefone-invalido");
+});
+
+// Validação final (use dentro do salvar(), sem remover nada)
+function validarTelefoneBrasileiro() {
+    if (!telefoneValido(telefone.value)) {
+        telefone.classList.add("telefone-invalido");
+        telefone.focus();
+        alert("Informe um telefone válido no formato (DDD) XXXXX-XXXX");
+        return false;
+    }
+    return true;
+}
+
 </script>
 </head>
 
-<body>
-
-<div id="welcome" class="welcome">
-    <div class="welcome-card">
-        <h1>Seja muito bem-vindo! 🙌</h1>
-        <p>“Alegrei-me quando me disseram: Vamos à casa do Senhor.”</p>
-        <small>Salmos 122:1</small>
-        <button onclick="fecharWelcome()">Continuar</button>
-    </div>
-</div>
-
 <div id="popup" class="popup">
     <div class="popup-card">
-        <h2>🎉 Registro realizado!</h2>
-        <p>Obrigado por sua visita.<br>Que Deus te abençoe!</p>
+        <h2>🎉 Obrigado pela sua visita!</h2>
+        <p>
+            Seu registro foi realizado com sucesso.<br>
+            Seja muito bem-vindo(a), que Deus te abençoe!
+        </p>
         <button onclick="fecharPopup()">Fechar</button>
     </div>
 </div>
 
+
+<body>
 <div class="container">
     <h2>Registro de Visitantes</h2>
 
-    <input id="nome" placeholder="Nome completo" required>
-    <input id="telefone" placeholder="Telefone" inputmode="numeric" required>
+    <input id="nome" placeholder="Nome completo">
+    <input id="telefone" placeholder="Telefone">
     <input id="convidado" placeholder="Quem convidou">
 
     <div class="lgpd-box">
         <label class="lgpd-check">
             <input type="checkbox" id="lgpd">
             <span class="checkmark"></span>
-            <strong>Concordo com o Aviso de Privacidade</strong>
+            <span class="lgpd-title">Concordo com o Aviso de Privacidade</span>
         </label>
         <p class="lgpd-text">
-            As informações coletadas serão utilizadas exclusivamente para fins de recepção
-            e organização interna da igreja, conforme a LGPD.
+            As informações coletadas neste formulário serão utilizadas exclusivamente
+            para fins de recepção, acolhimento e organização interna da igreja, conforme
+            a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).
         </p>
     </div>
 
+    <button class="voice-btn" onclick="iniciarVoz()">🎤 Registrar por Voz</button>
     <button class="save-btn" onclick="salvar()">Salvar</button>
+
+    <p id="status"></p>
+	
+	<div id="welcome" class="welcome">
+    <div class="welcome-card">
+        <h1>Seja muito bem-vindo! 🙌</h1>
+
+        <p class="verse">
+            “Alegrei-me quando me disseram: Vamos à casa do Senhor.”
+        </p>
+        <span class="ref">Salmos 122:1</span>
+
+        <button onclick="fecharWelcome()">Continuar</button>
+    </div>
 </div>
+	
+</div>
+<script>
+/* =====================================================
+   CORREÇÕES SEM ALTERAR CÓDIGO EXISTENTE
+   ===================================================== */
+
+/* 1️⃣ GARANTE QUE O INPUT EXISTE ANTES DO EVENTO */
+document.addEventListener("DOMContentLoaded", function () {
+
+    if (!window.telefone) return;
+
+    /* 2️⃣ MÁSCARA FUNCIONA DIGITANDO E COLANDO */
+    telefone.addEventListener("input", function () {
+        telefone.value = aplicarMascaraTelefone(telefone.value);
+        telefone.classList.remove("telefone-invalido");
+    });
+
+});
+
+/* 3️⃣ GARANTE VALIDAÇÃO (SEM REMOVER A ANTIGA) */
+const salvarOriginal = salvar;
+salvar = function () {
+
+    if (!validarTelefoneBrasileiro()) {
+        return;
+    }
+
+    salvarOriginal();
+};
+
+/* 4️⃣ REAPLICA MÁSCARA APÓS VOZ */
+const reconhecimentoOriginal = recognition.onresult;
+recognition.onresult = function (event) {
+
+    reconhecimentoOriginal(event);
+
+    if (etapa === 3 && telefone.value) {
+        telefone.value = aplicarMascaraTelefone(telefone.value);
+    }
+};
+
+/* =====================================================
+   COMPLEMENTO VISUAL PARA REGISTRO POR VOZ
+   ===================================================== */
+
+function limparDestaqueVoz() {
+    if (window.nome) nome.classList.remove("voice-highlight");
+    if (window.telefone) telefone.classList.remove("voice-highlight");
+    if (window.convidado) convidado.classList.remove("voice-highlight");
+}
+
+/* Intercepta a função falar SEM substituí-la */
+const falarOriginal = falar;
+falar = function (texto) {
+
+    limparDestaqueVoz();
+
+    if (texto.toLowerCase().includes("nome")) {
+        nome.classList.add("voice-highlight");
+    }
+
+    if (texto.toLowerCase().includes("telefone")) {
+        telefone.classList.add("voice-highlight");
+    }
+
+    if (texto.toLowerCase().includes("convidou")) {
+        convidado.classList.add("voice-highlight");
+    }
+
+    falarOriginal(texto);
+};
+
+/* Remove destaque ao finalizar reconhecimento */
+const recognitionStopOriginal = recognition.stop.bind(recognition);
+recognition.stop = function () {
+    limparDestaqueVoz();
+    recognitionStopOriginal();
+};
+
+
+</script>
+
 
 </body>
 </html>
